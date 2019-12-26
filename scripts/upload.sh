@@ -2,11 +2,12 @@
 
 # aws lambda list-functions --region us-east-1
 project_version=0.0.1
-archive=spring-boot-lambda-${project_version}.jar
+basename=spring-lambda
+archive=${basename}-${project_version}.jar
 archive_md5=$(md5 -q target/${archive})
 ts="$(date +%Y-%m-%d)-${archive_md5}"
-archiveS3=spring-boot-lambda-${project_version}-${ts}.jar
-s3Bucket=spring-boot-demo-04ff
+archiveS3=${basename}-${project_version}-${ts}.jar
+s3Bucket=spring-lambda-04ff
 s3Region=us-west-2
 s3Key=lambda/${archiveS3}
 s3Uri=s3://${s3Bucket}/${s3Key}
@@ -35,7 +36,7 @@ function updateLambdaFunctionFromS3() {
     echo "Updating lambda function..."
     local cmd="aws lambda update-function-code \
             --region ${s3Region} \
-            --function-name spring-boot-demo \
+            --function-name ${basename} \
             --s3-bucket ${s3Bucket} --s3-key ${s3Key}"
     echo Executing: ${cmd}
     eval ${cmd}
@@ -45,7 +46,7 @@ function updateLambdaFunction() {
     echo "Updating lambda function..."
     local cmd="aws lambda update-function-code \
             --region ${lambdaRegion} \
-            --function-name spring-boot-demo \
+            --function-name ${basename} \
             --zip-file fileb://target/${archive}"
     echo Executing: ${cmd}
     eval ${cmd}
@@ -61,9 +62,9 @@ if [[ "${update_only}" == "yes" ]]; then
 fi
 
 if [[ "${s3_enabled}" == "yes" ]]; then
-    mvn package -P!sbmp,shade -DskipTests && updateLambdaFunctionFromS3
+    ./mvnw package -Pshade -DskipTests && updateLambdaFunctionFromS3
 else
-    mvn package -P!sbmp,shade -DskipTests && updateLambdaFunction
+    ./mvnw package -Pshade -DskipTests && updateLambdaFunction
 fi
 
 

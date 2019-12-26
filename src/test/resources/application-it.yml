@@ -1,6 +1,9 @@
 spring:
   application:
     name: "Lambda Spring Boot (Integration Test)"
+    version:
+    formatted-version:
+    java.version:
 
 motto:
   house: "Tully"

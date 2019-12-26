@@ -1,12 +1,11 @@
-app:
-  version: 0.0.1
-  formatted-version: "v${app.version}"
-  java.version: "@java.version@"
-
 spring:
   application:
     name: "Lambda Spring Boot (Test)"
-  profiles.active: dev
+    version: "@project.version@"
+    formatted-version: "v@project.version@"
+    java.version: "@java.version@"
+  profiles:
+    active: dev
 
 logging:
   level:
