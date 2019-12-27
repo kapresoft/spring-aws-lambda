@@ -10,7 +10,7 @@ archive_file=${basename}-${project_version}-${ts}.jar
 
 s3Region=us-west-2
 s3Bucket=staging-04ff
-s3Key=lambda/spring-lambda/${archive_file}
+s3Key=lambda/${archive_file}
 s3Uri=s3://${s3Bucket}/${s3Key}
 
 upload_only_opt=$1
