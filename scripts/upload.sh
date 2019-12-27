@@ -6,12 +6,12 @@ basename=spring-lambda
 archive=${basename}-${project_version}.jar
 archive_md5=$(md5 -q target/${archive})
 ts="$(date +%Y-%m-%d)-${archive_md5}"
-archiveS3=${basename}-${project_version}-${ts}.jar
-s3Bucket=spring-lambda-04ff
+archive_file=${basename}-${project_version}-${ts}.jar
+
 s3Region=us-west-2
-s3Key=lambda/${archiveS3}
+s3Bucket=staging-04ff
+s3Key=lambda/spring-lambda/${archive_file}
 s3Uri=s3://${s3Bucket}/${s3Key}
-lambdaRegion=${s3Region}
 
 upload_only_opt=$1
 s3_enabled=no
@@ -45,7 +45,7 @@ function updateLambdaFunctionFromS3() {
 function updateLambdaFunction() {
     echo "Updating lambda function..."
     local cmd="aws lambda update-function-code \
-            --region ${lambdaRegion} \
+            --region ${s3Region} \
             --function-name ${basename} \
             --zip-file fileb://target/${archive}"
     echo Executing: ${cmd}
@@ -62,9 +62,11 @@ if [[ "${update_only}" == "yes" ]]; then
 fi
 
 if [[ "${s3_enabled}" == "yes" ]]; then
-    ./mvnw package -Pshade -DskipTests && updateLambdaFunctionFromS3
+    echo "Packaging lambda..."
+    ./mvnw package -q -Pshade -DskipTests && updateLambdaFunctionFromS3
 else
-    ./mvnw package -Pshade -DskipTests && updateLambdaFunction
+    echo "Packaging lambda..."
+    ./mvnw package -q -Pshade -DskipTests && updateLambdaFunction
 fi
 
 
